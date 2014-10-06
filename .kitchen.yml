@@ -1,0 +1,31 @@
+---
+driver_plugin: digitalocean
+driver_config:
+  digitalocean_client_id: <%= ENV['DIGITALOCEAN_CLIENT_ID'] %>
+  digitalocean_api_key: <%= ENV['DIGITALOCEAN_API_KEY'] %>
+  ssh_key: <%= ENV['DIGITALOCEAN_SSH_KEY_PATH'] %>
+  ssh_key_ids: <%= ENV['DIGITALOCEAN_SSH_KEY_IDS'] %>
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-14.04
+    driver_plugin: digitalocean
+    driver_config:
+      image_id: 6510539
+
+suites:
+  - name: controller
+    data_bags_path: test/integration/default/data_bags
+    encrypted_data_bag_secret_key_path: test/integration/default/data_bag_key
+    run_list:
+      - recipe[openstack-common::mysql]
+      - recipe[openstack-cinder::controller]
+    attributes: {
+      openstack: {
+        public_address: "localhost",
+        admin_address: "localhost",
+        internal_address: "localhost"
+      }
+    }
